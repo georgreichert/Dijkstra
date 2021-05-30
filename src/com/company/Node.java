@@ -9,13 +9,22 @@ public class Node {
     private List<Edge> edges = new LinkedList<Edge>();
     private Node shortestPathTo = null;
     private int currentCost = Integer.MAX_VALUE;
+    private String lineTo = "";
+
+    public void setLineTo(String lineTo) {
+        this.lineTo = lineTo;
+    }
+
+    public String getLineTo() {
+        return lineTo;
+    }
 
     public Node(String name) {
         this.name = name;
     }
 
-    public void addEdge(Node target, int weight) {
-        edges.add(new Edge(target, weight));
+    public void addEdge(Node target, int weight, String line) {
+        edges.add(new Edge(target, weight, line));
     }
 
     public void dijkstra(Node target, PriorityQueue<Node> nodeQueue, List<Node> path) {
@@ -29,11 +38,11 @@ public class Node {
                 nodeQueue.remove(end);
                 end.setCurrentCost(this.currentCost + edge.getWeight());
                 end.setShortestPathTo(this);
+                end.setLineTo(edge.getLine());
                 nodeQueue.add(end);
             }
         }
         if (nodeQueue.peek().getCurrentCost() < Integer.MAX_VALUE) {
-            System.out.println(nodeQueue.peek().getName());
             nodeQueue.poll().dijkstra(target, nodeQueue, path);
         }
     }

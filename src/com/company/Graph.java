@@ -6,21 +6,23 @@ public class Graph {
     private HashMap<String, Node> nodes = new HashMap<String, Node>();
 
     public void addNode(String name) {
-        nodes.put(name, new Node(name));
+        if (!nodes.containsKey(name)) {
+            nodes.put(name, new Node(name));
+        }
     }
 
-    public void addEdge(String from, String to, int weight) {
-        addEdge(from, to, weight, false);
+    public void addEdge(String from, String to, int weight, String line) {
+        addEdge(from, to, weight, line, false);
     }
 
-    public void addEdge(String from, String to, int weight, boolean bidirectional) {
+    public void addEdge(String from, String to, int weight, String line, boolean bidirectional) {
         Node start = nodes.get(from);
         if (start != null) {
             Node target = nodes.get(to);
             if (target != null) {
-                start.addEdge(target, weight);
+                start.addEdge(target, weight, line);
                 if (bidirectional) {
-                    target.addEdge(start, weight);
+                    target.addEdge(start, weight, line);
                 }
             }
         }
@@ -41,9 +43,9 @@ public class Graph {
         });
 
         Node start = nodes.get(from);
-        start.setCurrentCost(0);
         LinkedList<Node> path = new LinkedList<Node>();
         if (start != null) {
+            start.setCurrentCost(0);
             Node target = nodes.get(to);
             if (target != null) {
                 start.dijkstra(target, nodeQueue, path);
