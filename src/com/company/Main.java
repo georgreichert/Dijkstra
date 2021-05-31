@@ -20,7 +20,7 @@ public class Main {
 
         try {
             System.out.println("Fahrzeit: " + path.get(path.size() - 1).getCurrentCost() + " Minuten");
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) { // will be thrown if path is empty (no path was found)
             System.out.println("Kein Weg gefunden!");
         }
         for (Node node : path) {
@@ -32,19 +32,19 @@ public class Main {
         BufferedReader br = new BufferedReader(new FileReader(filepath));
         String nextLine;
         while ((nextLine = br.readLine()) != null) {
-            String[] temp = nextLine.split(":");
+            String[] temp = nextLine.split(":"); // split line tag from rest of the input
             String line = temp[0];
-            temp = temp[1].split("\"\s");
+            temp = temp[1].split("\"\s"); // split input into subgroups containing only one station and the time needed to get there
             String lastStation = "";
             for (String station : temp) {
-                String[] split = station.split("\s\"");
-                split[1] = split[1].indexOf("\"") >= 0 ? split[1].substring(0, split[1].length() - 1) : split[1];
-                graph.addNode(split[1]);
-                if (!split[0].isEmpty()) {
-                    int weight = Integer.parseInt(split[0]);
-                    graph.addEdge(split[1], lastStation, weight, line, true);
+                String[] split = station.split("\s\""); // split station name from travelling time
+                split[1] = split[1].indexOf("\"") >= 0 ? split[1].substring(0, split[1].length() - 1) : split[1]; // this removes the last " from the last element
+                graph.addNode(split[1]); // if node already exists, nothing happens
+                if (!split[0].isEmpty()) { // don't do this for the first station, as it has no precursor
+                    int weight = Integer.parseInt(split[0]); // read travelling time as int
+                    graph.addEdge(split[1], lastStation, weight, line, true); // add edge from last station to this station
                 }
-                lastStation = split[1];
+                lastStation = split[1]; // remember this station as precursor for the next station
             }
         }
     }

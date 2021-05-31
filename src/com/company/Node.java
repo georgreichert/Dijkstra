@@ -28,32 +28,34 @@ public class Node {
     }
 
     public void dijkstra(Node target, PriorityQueue<Node> nodeQueue, List<Node> path) {
-        if (this.equals(target)) {
-            retrievePath(path);
+        if (this.equals(target)) { // if target Node is found, algorithm stops
+            retrievePath(path); // recursively reads shortest path from all precursor Nodes
             return;
         }
-        for (Edge edge : edges) {
+        for (Edge edge : edges) { // check if any Nodes can be reached from this Node with less cost than previously known
             Node end = edge.getEnd();
-            if (end.getCurrentCost() > this.currentCost + edge.getWeight()) {
-                nodeQueue.remove(end);
-                end.setCurrentCost(this.currentCost + edge.getWeight());
-                end.setShortestPathTo(this);
-                end.setLineTo(edge.getLine());
-                nodeQueue.add(end);
+            if (end.getCurrentCost() > this.currentCost + edge.getWeight()) { // if Node can be reached cheaper from here
+                nodeQueue.remove(end); // remove it from the PriorityQueue
+                end.setCurrentCost(this.currentCost + edge.getWeight()); // overwrite its cost,
+                end.setShortestPathTo(this); // its precursor and
+                end.setLineTo(edge.getLine()); // the line identifier of the used mode of transportation (U1, U2, ...)
+                nodeQueue.add(end); // then add it back into the Queue
             }
         }
-        if (nodeQueue.peek().getCurrentCost() < Integer.MAX_VALUE) {
+        if (nodeQueue.peek().getCurrentCost() < Integer.MAX_VALUE) { // we are not interested in Nodes with infinite current cost
+            // remove the Node from the front of the Queue, which is the Node with current cheapest cost to reach
+            // continue the search from there
             nodeQueue.poll().dijkstra(target, nodeQueue, path);
         }
     }
 
     public void retrievePath(List<Node> path) {
-        if (this.shortestPathTo != null) {
-            if (path.isEmpty()) {
+        if (this.shortestPathTo != null) { // starting Node has no precursor
+            if (path.isEmpty()) { // target Node has to add itself to the path as well
                 path.add(this);
             }
-            path.add(0, this.shortestPathTo);
-            shortestPathTo.retrievePath(path);
+            path.add(0, this.shortestPathTo); // push precursor to front of the path List
+            shortestPathTo.retrievePath(path); // continue with precursor
         }
     }
 
@@ -78,6 +80,7 @@ public class Node {
         return name;
     }
 
+    // only used for printing Graph
     public int getEdgeWeight(String targetName) {
         for (Edge edge : edges) {
             if (edge.getEnd().getName().equals(targetName)) {
